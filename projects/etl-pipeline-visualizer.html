@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETL Pipeline Visualizer &amp; Monitor — Santiago Rodriguez</title>
+  <meta name="description" content="Interactive ETL pipeline demo: ingest, validate, transform, and output member eligibility data with real-time monitoring and quality scoring." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" defer></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" aria-hidden="true"></div>
+
+  <!-- Nav -->
+  <nav class="navbar navbar--scrolled" role="navigation" aria-label="Main navigation">
+    <div class="navbar__container">
+      <a href="../index.html" class="navbar__logo">
+        <div class="navbar__monogram" aria-hidden="true">SR</div>
+        <span class="navbar__brand">Santiago Rodriguez</span>
+      </a>
+      <ul class="navbar__links" id="nav-links" role="list">
+        <li><a href="../index.html#about"      class="navbar__link">About</a></li>
+        <li><a href="../index.html#experience" class="navbar__link">Experience</a></li>
+        <li><a href="../index.html#projects"   class="navbar__link">Projects</a></li>
+      </ul>
+      <a href="../images/santiago_rodriguez_resume_2026.pdf" class="btn btn--outline navbar__cta" target="_blank" rel="noopener noreferrer">Resume</a>
+      <button class="navbar__hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="navbar__hamburger-line"></span>
+        <span class="navbar__hamburger-line"></span>
+        <span class="navbar__hamburger-line"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Project Header -->
+  <header class="project-header">
+    <div class="container">
+      <div class="project-header__content">
+        <a href="../index.html#projects" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Back to Projects
+        </a>
+        <h1 class="project-header__title">ETL Pipeline Visualizer &amp; Monitor</h1>
+        <div class="project-header__meta">
+          <span class="meta-badge">Data Engineering</span>
+          <span class="meta-badge">ETL</span>
+          <span class="meta-badge">Automation</span>
+          <span class="meta-badge">Live Demo</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tool -->
+  <main class="section">
+    <div class="container">
+
+      <p style="color:var(--text-muted);font-size:1.05rem;line-height:1.75;max-width:760px;margin-bottom:2.5rem;">
+        This tool simulates a real ETL pipeline processing member eligibility data — the same type of data processed daily at MaxorPlus.
+        Upload your own CSV or use the built-in sample dataset. Each stage runs sequentially, flagging data quality issues
+        and applying transformations before producing a clean output file.
+      </p>
+
+      <!-- Controls -->
+      <div class="etl-controls">
+        <label class="file-label" for="file-input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload CSV
+        </label>
+        <input type="file" id="file-input" accept=".csv" aria-label="Upload CSV file" />
+
+        <button class="btn btn--outline" id="btn-sample" type="button">Use Sample Dataset</button>
+        <button class="btn btn--primary" id="btn-run" type="button" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Run Pipeline
+        </button>
+        <button class="btn btn--outline btn--sm" id="btn-reset" type="button" style="display:none;">Reset</button>
+      </div>
+
+      <!-- File info badge -->
+      <div id="file-info" style="display:none;margin-bottom:1.5rem;">
+        <span class="meta-badge" id="file-info-text"></span>
+      </div>
+
+      <!-- Pipeline Diagram -->
+      <div class="pipeline-diagram" role="list" aria-label="Pipeline stages">
+
+        <div class="pipeline-stage" id="stage-ingest" role="listitem">
+          <div class="pipeline-stage__num">1</div>
+          <div class="pipeline-stage__icon" id="icon-ingest">⬜</div>
+          <div class="pipeline-stage__name">Ingest</div>
+          <div class="pipeline-stage__status" id="status-ingest">Waiting</div>
+          <div class="pipeline-stage__stat"  id="stat-ingest">—</div>
+        </div>
+
+        <div class="pipeline-connector" aria-hidden="true">▶</div>
+
+        <div class="pipeline-stage" id="stage-validate" role="listitem">
+          <div class="pipeline-stage__num">2</div>
+          <div class="pipeline-stage__icon" id="icon-validate">⬜</div>
+          <div class="pipeline-stage__name">Validate</div>
+          <div class="pipeline-stage__status" id="status-validate">Waiting</div>
+          <div class="pipeline-stage__stat"  id="stat-validate">—</div>
+        </div>
+
+        <div class="pipeline-connector" aria-hidden="true">▶</div>
+
+        <div class="pipeline-stage" id="stage-transform" role="listitem">
+          <div class="pipeline-stage__num">3</div>
+          <div class="pipeline-stage__icon" id="icon-transform">⬜</div>
+          <div class="pipeline-stage__name">Transform</div>
+          <div class="pipeline-stage__status" id="status-transform">Waiting</div>
+          <div class="pipeline-stage__stat"  id="stat-transform">—</div>
+        </div>
+
+        <div class="pipeline-connector" aria-hidden="true">▶</div>
+
+        <div class="pipeline-stage" id="stage-output" role="listitem">
+          <div class="pipeline-stage__num">4</div>
+          <div class="pipeline-stage__icon" id="icon-output">⬜</div>
+          <div class="pipeline-stage__name">Output</div>
+          <div class="pipeline-stage__status" id="status-output">Waiting</div>
+          <div class="pipeline-stage__stat"  id="stat-output">—</div>
+        </div>
+
+      </div><!-- /.pipeline-diagram -->
+
+      <!-- Log Panel -->
+      <p style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:0.5rem;">Pipeline Log</p>
+      <div class="log-panel" id="log-panel" role="log" aria-live="polite" aria-label="Pipeline execution log">
+        <div class="log-entry log-entry--info"><span class="log-entry__time">00:00:00</span><span>Pipeline ready. Load data to begin.</span></div>
+      </div>
+
+      <!-- Results Panel -->
+      <div class="results-panel" id="results-panel">
+
+        <div class="quality-score">
+          <p class="quality-score__label">Data Quality Score</p>
+          <div>
+            <span class="quality-score__value" id="score-value">—</span><span class="quality-score__suffix gradient-text">/100</span>
+          </div>
+          <p class="quality-score__desc" id="score-desc"></p>
+        </div>
+
+        <div class="metrics-grid" id="metrics-grid"></div>
+
+        <div style="margin-bottom:1.5rem;">
+          <p class="validation-results-title">Validation Results</p>
+          <table class="validation-table" id="validation-table">
+            <thead>
+              <tr>
+                <th>Rule</th>
+                <th>Result</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="validation-body"></tbody>
+          </table>
+        </div>
+
+        <button class="btn btn--primary" id="btn-download" type="button" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Clean CSV
+        </button>
+
+      </div><!-- /.results-panel -->
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__content">
+        <p class="footer__name">Santiago Rodriguez</p>
+        <div class="footer__social">
+          <a href="https://www.linkedin.com/in/santiago-rodriguez8" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://github.com/rodsan8" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+        </div>
+        <p class="footer__copy">&copy; 2025 Santiago Rodriguez</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+  /* ============================================
+     ETL Pipeline Tool Logic
+     ============================================ */
+  (function () {
+    'use strict';
+
+    /* ---- Sample Data ---- */
+    var SAMPLE_CSV = [
+      'member_id,first_name,last_name,dob,plan_code,effective_date,termination_date,status',
+      'M1001,John,Smith,1985-03-12,GOLD,2024-01-01,,ACTIVE',
+      'M1002,maria,gonzalez,1990-07-22,SILVER,2024-01-01,2024-12-31,INACTIVE',
+      'M1003,David,Lee,1978-11-05,GOLD,2024-02-01,,ACT',
+      'M1004,Sarah,Johnson,1992-04-30,BRONZE,2024-01-15,,ACTIVE',
+      'M1005,james,wilson,1965-08-18,GOLD,2023-06-01,2024-06-01,TERM',
+      'M1006,Emily,Davis,1988-02-14,SILVER,2024-03-01,,ACTIVE',
+      'M1007,Robert,Martinez,1972-09-25,BRONZE,2024/01/01,,PEND',
+      'M1008,Lisa,Anderson,1995-05-03,GOLD,2024-01-01,,ACTIVE',
+      ',Kevin,Brown,1980-12-20,SILVER,2024-02-01,,ACTIVE',
+      'M1010,Patricia,Taylor,1969-06-15,BRONZE,2024-01-01,2025-01-01,INACTIVE',
+      'M1001,Duplicate,Record,1985-03-12,GOLD,2024-01-01,,ACTIVE',
+      'M1012,Christopher,Thomas,1987-10-08,GOLD,01/15/2024,,ACTIVE',
+      'M1013,amanda,jackson,2001-03-27,SILVER,2024-03-15,,ENRLL',
+      'M1014,Daniel,White,1994-12-01,BRONZE,2024-01-01,,ACTIVE',
+      'M1015,Jessica,Harris,1983-07-19,GOLD,2024-02-01,,ACT',
+      'M1016,Matthew,Clark,1976-04-22,SILVER,2023-09-01,2024-09-01,TERMINATED',
+      'M1017,Ashley,Lewis,1991-01-30,BRONZE,2024-01-01,,ACTIVE',
+      'M1018,Joshua,Robinson,1968-08-12,GOLD,2024-01-15,,PENDING',
+      'M1019,stephanie,walker,1999-05-25,SILVER,2024/03/01,,ACTIVE',
+      'M1020,Andrew,Hall,1984-11-07,BRONZE,2024-02-01,,ACTIVE',
+      '',
+      'M1022,Megan,Allen,1993-06-14,GOLD,2024-01-01,,ACTIVE',
+      'M1023,Ryan,Young,1979-02-28,SILVER,2024-03-01,2025-03-01,INAC',
+      'M1024,Lauren,King,1986-09-03,BRONZE,2024-01-01,,ACTIVE',
+      'M1025,justin,wright,2000-04-17,GOLD,2024-02-15,,ACTIVE',
+      'M1026,Hannah,Scott,1974-12-22,SILVER,2023-11-01,2024-11-01,TERM',
+      'M1027,Brandon,Green,1989-07-09,BRONZE,2024-01-01,,ACTIVE',
+      'M1028,Samantha,Adams,1997-03-05,GOLD,2024-01-01,,ACTIVE',
+      'M1029,Tyler,Nelson,1982-10-18,SILVER,2024-02-01,,ACTIVE',
+      'M1030,Rachel,Carter,1971-05-31,BRONZE,2024-03-01,,ACTV'
+    ].join('\n');
+
+    /* ---- State ---- */
+    var rawData    = null;
+    var cleanData  = null;
+    var startTime  = null;
+    var running    = false;
+
+    /* ---- DOM refs ---- */
+    var btnRun      = document.getElementById('btn-run');
+    var btnSample   = document.getElementById('btn-sample');
+    var btnReset    = document.getElementById('btn-reset');
+    var btnDownload = document.getElementById('btn-download');
+    var fileInput   = document.getElementById('file-input');
+    var logPanel    = document.getElementById('log-panel');
+    var fileInfo    = document.getElementById('file-info');
+    var fileInfoTxt = document.getElementById('file-info-text');
+    var resultsPanel= document.getElementById('results-panel');
+
+    /* ---- Logging ---- */
+    function getTimestamp() {
+      if (!startTime) return '00:00:00';
+      var elapsed = Date.now() - startTime;
+      var ms = elapsed % 1000;
+      var s  = Math.floor(elapsed / 1000) % 60;
+      var m  = Math.floor(elapsed / 60000);
+      return pad(m) + ':' + pad(s) + ':' + pad(Math.floor(ms / 10));
+    }
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+    function log(msg, type) {
+      type = type || 'info';
+      var entry = document.createElement('div');
+      entry.className = 'log-entry log-entry--' + type;
+      entry.innerHTML = '<span class="log-entry__time">' + getTimestamp() + '</span><span>' + escHtml(msg) + '</span>';
+      logPanel.appendChild(entry);
+      logPanel.scrollTop = logPanel.scrollHeight;
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function clearLog() {
+      logPanel.innerHTML = '';
+    }
+
+    /* ---- Stage UI helpers ---- */
+    var stages = ['ingest','validate','transform','output'];
+
+    function setStageRunning(name) {
+      var el = document.getElementById('stage-' + name);
+      el.className = 'pipeline-stage pipeline-stage--running';
+      document.getElementById('icon-' + name).innerHTML = '<span class="spinner"></span>';
+      document.getElementById('status-' + name).textContent = 'Running...';
+    }
+
+    function setStageComplete(name, stat) {
+      var el = document.getElementById('stage-' + name);
+      el.className = 'pipeline-stage pipeline-stage--complete';
+      document.getElementById('icon-' + name).textContent = '✅';
+      document.getElementById('status-' + name).textContent = 'Complete';
+      if (stat !== undefined) document.getElementById('stat-' + name).textContent = stat;
+    }
+
+    function setStageError(name, msg) {
+      var el = document.getElementById('stage-' + name);
+      el.className = 'pipeline-stage pipeline-stage--error';
+      document.getElementById('icon-' + name).textContent = '❌';
+      document.getElementById('status-' + name).textContent = 'Error';
+      if (msg) document.getElementById('stat-' + name).textContent = msg;
+    }
+
+    function resetStages() {
+      stages.forEach(function (name) {
+        var el = document.getElementById('stage-' + name);
+        el.className = 'pipeline-stage';
+        document.getElementById('icon-' + name).textContent = '⬜';
+        document.getElementById('status-' + name).textContent = 'Waiting';
+        document.getElementById('stat-' + name).textContent = '—';
+      });
+    }
+
+    /* ---- Sleep helper ---- */
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+    /* ---- Date normalizer ---- */
+    function normalizeDate(s) {
+      if (!s || s.trim() === '') return 'N/A';
+      var d = s.trim();
+      // YYYY-MM-DD → MM/DD/YYYY
+      var m = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (m) return m[2] + '/' + m[3] + '/' + m[1];
+      // YYYY/MM/DD → MM/DD/YYYY
+      m = d.match(/^(\d{4})\/(\d{2})\/(\d{2})$/);
+      if (m) return m[2] + '/' + m[3] + '/' + m[1];
+      // Already MM/DD/YYYY
+      if (d.match(/^\d{2}\/\d{2}\/\d{4}$/)) return d;
+      return d;
+    }
+
+    /* ---- Status mapper ---- */
+    var STATUS_MAP = { ACT:'ACTIVE', INAC:'INACTIVE', TERM:'TERMINATED', PEND:'PENDING' };
+    var VALID_STATUSES = ['ACTIVE','INACTIVE','TERMINATED','PENDING'];
+
+    /* ---- CSV to objects ---- */
+    function parseCSV(csvString) {
+      var result = Papa.parse(csvString, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: function (h) { return h.trim(); }
+      });
+      return {
+        rows: result.data,
+        fields: result.meta.fields || [],
+        errors: result.errors || []
+      };
+    }
+
+    /* ============ PIPELINE STAGES ============ */
+
+    async function stageIngest(csvString, fileName, fileSize) {
+      setStageRunning('ingest');
+      log('Starting INGEST stage...', 'info');
+      await sleep(700);
+
+      var parsed = parseCSV(csvString);
+      var rows = parsed.rows;
+      var fields = parsed.fields;
+
+      log('File received: ' + (fileName || 'sample_data.csv'), 'info');
+      if (fileSize) log('File size: ' + fileSize, 'info');
+      log('Detected ' + fields.length + ' columns: ' + fields.join(', '), 'info');
+      log('Parsed ' + rows.length + ' data rows', 'success');
+
+      if (parsed.errors.length) {
+        log('Parse warnings: ' + parsed.errors.length + ' rows skipped', 'warn');
+      }
+
+      setStageComplete('ingest', rows.length + ' rows');
+      log('INGEST complete — ' + rows.length + ' rows loaded', 'success');
+      return { rows: rows, fields: fields };
+    }
+
+    async function stageValidate(rows) {
+      setStageRunning('validate');
+      log('Starting VALIDATE stage...', 'info');
+      await sleep(900);
+
+      var issues = {
+        nullIdRows:      [],   // indices
+        dupeIdRows:      [],   // indices
+        badStatusRows:   [],   // indices (unmappable)
+        fixStatusRows:   [],   // indices (short code, mappable)
+        fixDateRows:     []    // indices (non-standard format but parseable)
+      };
+
+      var seenIds = {};
+      var rules = [];
+
+      /* Rule 1 — member_id not null */
+      rows.forEach(function (row, i) {
+        if (!row.member_id || row.member_id.trim() === '') {
+          issues.nullIdRows.push(i);
+        }
+      });
+      var r1pass = rows.length - issues.nullIdRows.length;
+      rules.push({
+        name: 'member_id not null/empty',
+        status: issues.nullIdRows.length === 0 ? 'pass' : 'fail',
+        detail: issues.nullIdRows.length === 0
+          ? 'All ' + rows.length + ' rows pass'
+          : issues.nullIdRows.length + ' rows have empty member_id (will be dropped)'
+      });
+      log('Rule 1 — member_id not null: ' + r1pass + '/' + rows.length + ' pass', issues.nullIdRows.length ? 'warn' : 'success');
+
+      /* Rule 2 — no duplicate member_id */
+      rows.forEach(function (row, i) {
+        if (!row.member_id || row.member_id.trim() === '') return;
+        var id = row.member_id.trim();
+        if (seenIds[id] !== undefined) {
+          issues.dupeIdRows.push(i);
+        } else {
+          seenIds[id] = i;
+        }
+      });
+      rules.push({
+        name: 'No duplicate member_id',
+        status: issues.dupeIdRows.length === 0 ? 'pass' : 'fail',
+        detail: issues.dupeIdRows.length === 0
+          ? 'No duplicates found'
+          : issues.dupeIdRows.length + ' duplicate(s) found (will be dropped)'
+      });
+      log('Rule 2 — no duplicates: ' + issues.dupeIdRows.length + ' duplicate(s) found', issues.dupeIdRows.length ? 'warn' : 'success');
+
+      /* Rule 3 — date format */
+      var isoDateRe = /^\d{4}-\d{2}-\d{2}$/;
+      var altDateRe = /^\d{4}\/\d{2}\/\d{2}$|^\d{2}\/\d{2}\/\d{4}$/;
+      rows.forEach(function (row, i) {
+        if (issues.nullIdRows.indexOf(i) !== -1) return;
+        var fields = ['dob','effective_date'];
+        fields.forEach(function (f) {
+          var v = (row[f] || '').trim();
+          if (v && !isoDateRe.test(v)) {
+            if (altDateRe.test(v)) {
+              if (issues.fixDateRows.indexOf(i) === -1) issues.fixDateRows.push(i);
+            }
+          }
+        });
+      });
+      rules.push({
+        name: 'Date format (dob, effective_date)',
+        status: issues.fixDateRows.length === 0 ? 'pass' : 'warn',
+        detail: issues.fixDateRows.length === 0
+          ? 'All dates in standard format'
+          : issues.fixDateRows.length + ' row(s) with non-ISO dates (will be normalized)'
+      });
+      log('Rule 3 — date format: ' + issues.fixDateRows.length + ' non-standard date(s) detected', issues.fixDateRows.length ? 'warn' : 'success');
+
+      /* Rule 4 — valid status values */
+      rows.forEach(function (row, i) {
+        if (issues.nullIdRows.indexOf(i) !== -1) return;
+        var s = (row.status || '').trim().toUpperCase();
+        if (s) {
+          if (VALID_STATUSES.indexOf(s) !== -1) {
+            // already valid
+          } else if (STATUS_MAP[s]) {
+            issues.fixStatusRows.push(i);
+          } else {
+            issues.badStatusRows.push(i);
+          }
+        }
+      });
+      rules.push({
+        name: 'Valid status value',
+        status: issues.badStatusRows.length === 0 ? (issues.fixStatusRows.length > 0 ? 'warn' : 'pass') : 'fail',
+        detail: (function () {
+          var parts = [];
+          if (issues.fixStatusRows.length) parts.push(issues.fixStatusRows.length + ' short code(s) will be mapped');
+          if (issues.badStatusRows.length)  parts.push(issues.badStatusRows.length + ' invalid value(s) will be dropped');
+          return parts.length ? parts.join('; ') : 'All status values valid';
+        })()
+      });
+      log('Rule 4 — status values: ' + issues.fixStatusRows.length + ' mappable, ' + issues.badStatusRows.length + ' invalid', issues.badStatusRows.length ? 'warn' : 'success');
+
+      var totalIssues = issues.nullIdRows.length + issues.dupeIdRows.length + issues.badStatusRows.length;
+      setStageComplete('validate', totalIssues + ' issue(s)');
+      log('VALIDATE complete — ' + totalIssues + ' critical issue(s) to resolve', totalIssues ? 'warn' : 'success');
+      return { rules: rules, issues: issues };
+    }
+
+    async function stageTransform(rows, issues) {
+      setStageRunning('transform');
+      log('Starting TRANSFORM stage...', 'info');
+      await sleep(1000);
+
+      var dropSet = {};
+      issues.nullIdRows.forEach(function (i)    { dropSet[i] = 'null_id'; });
+      issues.dupeIdRows.forEach(function (i)    { dropSet[i] = 'duplicate'; });
+      issues.badStatusRows.forEach(function (i) { dropSet[i] = 'invalid_status'; });
+
+      var droppedCount = Object.keys(dropSet).length;
+      log('Dropping ' + droppedCount + ' row(s): ' + issues.nullIdRows.length + ' null ID, ' + issues.dupeIdRows.length + ' duplicate, ' + issues.badStatusRows.length + ' invalid status', 'warn');
+
+      var cleaned = [];
+      rows.forEach(function (row, i) {
+        if (dropSet[i]) return;
+
+        var status = (row.status || '').trim().toUpperCase();
+        var mappedStatus = STATUS_MAP[status] || status;
+
+        cleaned.push({
+          member_id:        (row.member_id || '').trim(),
+          first_name:       (row.first_name || '').trim().toUpperCase(),
+          last_name:        (row.last_name || '').trim().toUpperCase(),
+          dob:              normalizeDate(row.dob),
+          plan_code:        (row.plan_code || '').trim().toUpperCase(),
+          effective_date:   normalizeDate(row.effective_date),
+          termination_date: row.termination_date && row.termination_date.trim() ? normalizeDate(row.termination_date) : 'N/A',
+          status:           mappedStatus
+        });
+      });
+
+      log('Applied transforms: uppercase names, normalized dates (MM/DD/YYYY), mapped status codes', 'info');
+      log('Filled ' + cleaned.filter(function(r){ return r.termination_date === 'N/A'; }).length + ' empty termination_date fields with N/A', 'info');
+      log('Transform complete — ' + cleaned.length + ' clean rows', 'success');
+
+      setStageComplete('transform', cleaned.length + ' clean rows');
+      return { cleaned: cleaned, dropped: droppedCount };
+    }
+
+    async function stageOutput(cleaned, totalRows, validationResults, dropped) {
+      setStageRunning('output');
+      log('Starting OUTPUT stage...', 'info');
+      await sleep(600);
+
+      log('Generating output file...', 'info');
+      log('Output: ' + cleaned.length + ' clean records', 'success');
+      log('Dropped: ' + dropped + ' records', dropped > 0 ? 'warn' : 'info');
+
+      setStageComplete('output', cleaned.length + ' records ready');
+      log('OUTPUT complete — pipeline finished', 'success');
+      return true;
+    }
+
+    /* ---- Score calculation ---- */
+    function calcScore(totalRows, dropped, rules) {
+      if (totalRows === 0) return 0;
+      var droppedPct = dropped / totalRows;
+      var failedRules = rules.filter(function (r) { return r.status === 'fail'; }).length;
+      var warnRules   = rules.filter(function (r) { return r.status === 'warn'; }).length;
+      var score = 100 - (droppedPct * 50) - (failedRules * 8) - (warnRules * 4);
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    /* ---- Show Results ---- */
+    function showResults(ingestResult, validateResult, transformResult) {
+      var totalRows = ingestResult.rows.length;
+      var dropped   = transformResult.dropped;
+      var cleanRows = transformResult.cleaned.length;
+      var rules     = validateResult.rules;
+      var issues    = validateResult.issues;
+      var score     = calcScore(totalRows, dropped, rules);
+
+      /* Score */
+      document.getElementById('score-value').textContent = score;
+      var desc = score >= 90 ? 'Excellent — minimal data quality issues.'
+               : score >= 75 ? 'Good — some issues were detected and resolved.'
+               : score >= 60 ? 'Fair — several data quality issues required attention.'
+               : 'Needs Improvement — significant data quality problems found.';
+      document.getElementById('score-desc').textContent = desc;
+
+      /* Metrics */
+      var mGrid = document.getElementById('metrics-grid');
+      var metrics = [
+        { value: totalRows, label: 'Total Rows Ingested' },
+        { value: cleanRows, label: 'Clean Rows Output' },
+        { value: dropped,   label: 'Rows Dropped' },
+        { value: issues.fixDateRows.length + issues.fixStatusRows.length, label: 'Values Transformed' }
+      ];
+      mGrid.innerHTML = metrics.map(function (m) {
+        return '<div class="metric-box"><div class="metric-box__value">' + m.value + '</div><div class="metric-box__label">' + m.label + '</div></div>';
+      }).join('');
+
+      /* Validation table */
+      var tbody = document.getElementById('validation-body');
+      tbody.innerHTML = rules.map(function (r) {
+        var cls = r.status === 'pass' ? 'v-pass' : (r.status === 'warn' ? 'v-warn' : 'v-fail');
+        var label = r.status === 'pass' ? '✓ PASS' : (r.status === 'warn' ? '⚠ WARN' : '✗ FAIL');
+        return '<tr><td>' + escHtml(r.name) + '</td><td><span class="' + cls + '">' + label + '</span></td><td>' + escHtml(r.detail) + '</td></tr>';
+      }).join('');
+
+      /* Show download button */
+      btnDownload.style.display = 'inline-flex';
+
+      /* Store for download */
+      cleanData = transformResult.cleaned;
+
+      resultsPanel.classList.add('visible');
+      resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /* ---- CSV export ---- */
+    function downloadCSV(rows) {
+      if (!rows || rows.length === 0) return;
+      var headers = Object.keys(rows[0]);
+      var lines = [headers.join(',')];
+      rows.forEach(function (row) {
+        lines.push(headers.map(function (h) {
+          var val = row[h] == null ? '' : String(row[h]);
+          if (val.indexOf(',') !== -1 || val.indexOf('"') !== -1) {
+            val = '"' + val.replace(/"/g, '""') + '"';
+          }
+          return val;
+        }).join(','));
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href = url;
+      a.download = 'clean_member_eligibility.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    /* ---- Main run pipeline ---- */
+    async function runPipeline() {
+      if (running || !rawData) return;
+      running = true;
+      startTime = Date.now();
+      cleanData = null;
+
+      btnRun.disabled = true;
+      btnSample.disabled = true;
+      btnReset.style.display = 'none';
+      btnDownload.style.display = 'none';
+      resultsPanel.classList.remove('visible');
+      resetStages();
+      clearLog();
+
+      log('Pipeline started', 'info');
+
+      try {
+        var ingestResult   = await stageIngest(rawData.csv, rawData.name, rawData.size);
+        var validateResult = await stageValidate(ingestResult.rows);
+        var transformResult= await stageTransform(ingestResult.rows, validateResult.issues);
+        await stageOutput(transformResult.cleaned, ingestResult.rows.length, validateResult, transformResult.dropped);
+
+        var elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        log('Pipeline completed in ' + elapsed + 's', 'success');
+
+        showResults(ingestResult, validateResult, transformResult);
+      } catch (err) {
+        log('Pipeline error: ' + err.message, 'error');
+        console.error(err);
+      }
+
+      btnReset.style.display = 'inline-flex';
+      running = false;
+    }
+
+    /* ---- Load data helper ---- */
+    function loadData(csv, name, size) {
+      rawData = { csv: csv, name: name, size: size };
+      fileInfoTxt.textContent = name + (size ? ' · ' + size : '');
+      fileInfo.style.display = 'block';
+      btnRun.disabled = false;
+      log('Data loaded: ' + name + ' — click "Run Pipeline" to start', 'success');
+    }
+
+    /* ---- Event listeners ---- */
+    btnSample.addEventListener('click', function () {
+      clearLog();
+      resetStages();
+      resultsPanel.classList.remove('visible');
+      loadData(SAMPLE_CSV, 'sample_member_eligibility.csv', '30 rows');
+    });
+
+    fileInput.addEventListener('change', function () {
+      var file = fileInput.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        clearLog();
+        resetStages();
+        resultsPanel.classList.remove('visible');
+        var size = (file.size / 1024).toFixed(1) + ' KB';
+        loadData(e.target.result, file.name, size);
+      };
+      reader.readAsText(file);
+    });
+
+    btnRun.addEventListener('click', function () { runPipeline(); });
+
+    btnReset.addEventListener('click', function () {
+      rawData = null;
+      cleanData = null;
+      running = false;
+      btnRun.disabled = true;
+      btnSample.disabled = false;
+      btnReset.style.display = 'none';
+      btnDownload.style.display = 'none';
+      fileInfo.style.display = 'none';
+      fileInput.value = '';
+      resetStages();
+      clearLog();
+      resultsPanel.classList.remove('visible');
+      log('Pipeline reset. Load data to begin.', 'info');
+    });
+
+    btnDownload.addEventListener('click', function () {
+      if (cleanData) downloadCSV(cleanData);
+    });
+
+  })();
+  </script>
+
+</body>
+</html>

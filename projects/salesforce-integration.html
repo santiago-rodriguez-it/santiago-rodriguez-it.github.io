@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salesforce CRM Integration — Santiago Rodriguez</title>
+  <meta name="description" content="Case study: Architecting a daily automated ETL pipeline integrating a local member system with Salesforce CRM at MaxorPlus." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <div class="mobile-overlay" aria-hidden="true"></div>
+
+  <!-- Nav -->
+  <nav class="navbar navbar--scrolled" role="navigation" aria-label="Main navigation">
+    <div class="navbar__container">
+      <a href="../index.html" class="navbar__logo">
+        <div class="navbar__monogram" aria-hidden="true">SR</div>
+        <span class="navbar__brand">Santiago Rodriguez</span>
+      </a>
+      <ul class="navbar__links" id="nav-links" role="list">
+        <li><a href="../index.html#about"      class="navbar__link">About</a></li>
+        <li><a href="../index.html#experience" class="navbar__link">Experience</a></li>
+        <li><a href="../index.html#projects"   class="navbar__link">Projects</a></li>
+      </ul>
+      <a href="../images/santiago_rodriguez_resume_2026.pdf" class="btn btn--outline navbar__cta" target="_blank" rel="noopener noreferrer">Resume</a>
+      <button class="navbar__hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="navbar__hamburger-line"></span>
+        <span class="navbar__hamburger-line"></span>
+        <span class="navbar__hamburger-line"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Project Header -->
+  <header class="project-header">
+    <div class="container">
+      <div class="project-header__content">
+        <a href="../index.html#projects" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Back to Projects
+        </a>
+        <h1 class="project-header__title">Salesforce CRM Integration</h1>
+        <div class="project-header__meta">
+          <span class="meta-badge">ETL</span>
+          <span class="meta-badge">Salesforce</span>
+          <span class="meta-badge">CRM</span>
+          <span class="meta-badge">Integration</span>
+          <span class="meta-badge">2023</span>
+          <span class="meta-badge">Lead Architect / SME</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Case Study Content -->
+  <main>
+    <div class="container">
+
+      <!-- Problem Statement -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">The Problem</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Two Systems. No Connection.</h2>
+        </div>
+        <p>
+          MaxorPlus maintained member data in an internal platform that served as the operational source of truth for
+          eligibility, plan enrollment, and member status. Salesforce CRM was used separately by account managers to
+          track client relationships, service interactions, and member-level account activity.
+        </p>
+        <p>
+          The problem: there was no automated connection between the two systems. Account managers routinely had to
+          manually cross-reference both platforms to build a complete picture of a member — checking the internal
+          system for eligibility status, then Salesforce for account notes and history. When data didn't match,
+          someone manually corrected Salesforce by hand. This process repeated every time member data changed,
+          creating a persistent cycle of stale data, duplicate records, and wasted account manager time.
+        </p>
+      </div>
+
+      <!-- Before / After Flow -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.5rem;">
+          <p class="section__label">Process Comparison</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.5rem;">Before &amp; After</h2>
+        </div>
+
+        <div class="flow-diagrams">
+
+          <!-- BEFORE -->
+          <div class="flow-diagram">
+            <div class="flow-diagram__title flow-diagram__title--before">Before — Manual Sync</div>
+
+            <div class="flow-step">Account manager needs member info</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step">Checks internal member platform</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--pain">
+              Manually checks Salesforce CRM
+              <span class="flow-step__pain-label">⚠ Duplicate lookup effort</span>
+            </div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--pain">
+              Data doesn't match — gap identified
+              <span class="flow-step__pain-label">⚠ Stale / conflicting data</span>
+            </div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--pain">
+              Manually updates Salesforce record
+              <span class="flow-step__pain-label">⚠ Manual · Error-prone</span>
+            </div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step">Process repeats every time data changes</div>
+          </div>
+
+          <!-- AFTER -->
+          <div class="flow-diagram">
+            <div class="flow-diagram__title flow-diagram__title--after">After — Automated Daily Sync</div>
+
+            <div class="flow-step flow-step--auto">Internal platform — single source of truth</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Daily ETL job triggers automatically</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Extract changed records (delta logic)</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Transform &amp; deduplicate records</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Load to Salesforce via API</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Salesforce always current — no manual sync</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Account managers: single source of truth</div>
+          </div>
+
+        </div><!-- /.flow-diagrams -->
+      </div>
+
+      <!-- Solution Overview -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">The Solution</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Delta-Based ETL Architecture</h2>
+        </div>
+        <p>
+          I designed and built a daily scheduled ETL pipeline that ran overnight and had Salesforce fully synchronized
+          before the business day began. The pipeline used a delta detection approach — rather than performing a full
+          extract on every run, it identified only the records that had changed since the last successful load,
+          minimizing API calls and processing overhead.
+        </p>
+        <p>
+          The extract layer pulled member records from the internal SQL Server database, applying a last-modified
+          timestamp filter to scope the delta. A transformation layer standardized field formats and applied
+          deduplication logic — Salesforce's existing duplicate records were resolved by designating the internal
+          platform record as authoritative. The load layer used the Salesforce Bulk API for efficiency, with
+          upsert operations keyed on a unique member identifier.
+        </p>
+        <p>
+          Error handling and alerting were built into every layer: failed API calls triggered immediate email
+          notification to the team, and a daily summary log was generated for audit and troubleshooting purposes.
+          If the pipeline failed, account managers received an automated alert before they began their day.
+        </p>
+      </div>
+
+      <!-- Results -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">Impact</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Results</h2>
+        </div>
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-card__metric">Daily</div>
+            <div class="result-card__label">Automated sync keeps Salesforce current without any manual intervention</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card__metric">0</div>
+            <div class="result-card__label">Duplicate records — deduplication logic resolved all existing duplicates on first run</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card__metric">1 Source</div>
+            <div class="result-card__label">Account managers now work from a single authoritative source of truth</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card__metric">Delta</div>
+            <div class="result-card__label">Only changed records are synced — minimal API usage, fast runtime</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">Stack</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Technologies Used</h2>
+        </div>
+        <div class="tech-stack">
+          <span class="tech-badge">Python</span>
+          <span class="tech-badge">SQL Server</span>
+          <span class="tech-badge">Salesforce Bulk API</span>
+          <span class="tech-badge">PowerShell</span>
+          <span class="tech-badge">Internal ETL Framework</span>
+          <span class="tech-badge">Email Automation</span>
+          <span class="tech-badge">Windows Task Scheduler</span>
+        </div>
+      </div>
+
+    </div><!-- /.container -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__content">
+        <p class="footer__name">Santiago Rodriguez</p>
+        <div class="footer__social">
+          <a href="https://www.linkedin.com/in/santiago-rodriguez8" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://github.com/rodsan8" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+        </div>
+        <p class="footer__copy">&copy; 2025 Santiago Rodriguez</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

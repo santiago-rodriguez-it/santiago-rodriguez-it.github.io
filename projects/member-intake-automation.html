@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Intake Automation — Santiago Rodriguez</title>
+  <meta name="description" content="Case study: Transforming a manual member intake process into a fully automated ETL pipeline at MaxorPlus." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <div class="mobile-overlay" aria-hidden="true"></div>
+
+  <!-- Nav -->
+  <nav class="navbar navbar--scrolled" role="navigation" aria-label="Main navigation">
+    <div class="navbar__container">
+      <a href="../index.html" class="navbar__logo">
+        <div class="navbar__monogram" aria-hidden="true">SR</div>
+        <span class="navbar__brand">Santiago Rodriguez</span>
+      </a>
+      <ul class="navbar__links" id="nav-links" role="list">
+        <li><a href="../index.html#about"      class="navbar__link">About</a></li>
+        <li><a href="../index.html#experience" class="navbar__link">Experience</a></li>
+        <li><a href="../index.html#projects"   class="navbar__link">Projects</a></li>
+      </ul>
+      <a href="../images/santiago_rodriguez_resume_2026.pdf" class="btn btn--outline navbar__cta" target="_blank" rel="noopener noreferrer">Resume</a>
+      <button class="navbar__hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="navbar__hamburger-line"></span>
+        <span class="navbar__hamburger-line"></span>
+        <span class="navbar__hamburger-line"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Project Header -->
+  <header class="project-header">
+    <div class="container">
+      <div class="project-header__content">
+        <a href="../index.html#projects" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Back to Projects
+        </a>
+        <h1 class="project-header__title">Member Intake Automation</h1>
+        <div class="project-header__meta">
+          <span class="meta-badge">ETL</span>
+          <span class="meta-badge">Automation</span>
+          <span class="meta-badge">Healthcare Data</span>
+          <span class="meta-badge">2022 – 2023</span>
+          <span class="meta-badge">Solo Architect / Lead</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Case Study Content -->
+  <main>
+    <div class="container">
+
+      <!-- Problem Statement -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">The Problem</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Manual Process. Real Costs.</h2>
+        </div>
+        <p>
+          When a new employer client onboarded to the MaxorPlus PBM platform, adding their member population was
+          a labor-intensive, error-prone process. The operations team received member eligibility data from clients
+          as spreadsheet attachments via email — no standard format, no automated handoff.
+        </p>
+        <p>
+          An ops team member would manually open each file, map columns by hand, and key member records
+          one by one into the platform. A second team member would then perform a QA pass on the entered data.
+          Errors sent back to the client meant another round of corrections and re-entry.
+          For large clients with hundreds of members, this process could take days — delaying the go-live
+          date and tying up multiple staff members on purely mechanical work.
+        </p>
+      </div>
+
+      <!-- Before / After Flow -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.5rem;">
+          <p class="section__label">Process Comparison</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.5rem;">Before &amp; After</h2>
+        </div>
+
+        <div class="flow-diagrams">
+
+          <!-- BEFORE -->
+          <div class="flow-diagram">
+            <div class="flow-diagram__title flow-diagram__title--before">Before — Manual Process</div>
+
+            <div class="flow-step">Client sends spreadsheet via email</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step">Ops team downloads &amp; opens file</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--pain">
+              Manual data entry — record by record
+              <span class="flow-step__pain-label">⚠ Manual · Error-prone</span>
+            </div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--pain">
+              QA check by second team member
+              <span class="flow-step__pain-label">⚠ Bottleneck</span>
+            </div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--pain">
+              Errors sent back to client
+              <span class="flow-step__pain-label">⚠ Delay · Rework</span>
+            </div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step">Re-entry of corrections</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step">Record confirmed active</div>
+          </div>
+
+          <!-- AFTER -->
+          <div class="flow-diagram">
+            <div class="flow-diagram__title flow-diagram__title--after">After — Automated Pipeline</div>
+
+            <div class="flow-step flow-step--auto">Client submits standardized file via SFTP</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Automated pickup &amp; format validation</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Field mapping &amp; schema transformation</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Data quality checks &amp; exception flagging</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Clean records loaded to database</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Exceptions report emailed to ops team</div>
+            <div class="flow-arrow"></div>
+
+            <div class="flow-step flow-step--auto">Done — ops handles exceptions only</div>
+          </div>
+
+        </div><!-- /.flow-diagrams -->
+      </div>
+
+      <!-- Solution Overview -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">The Solution</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">End-to-End Pipeline Design</h2>
+        </div>
+        <p>
+          I designed and built a fully automated intake pipeline that picked up client files via SFTP on a scheduled basis.
+          The pipeline began with a format validation layer that verified column presence, file structure, and encoding
+          before any data processing occurred. Invalid files triggered an immediate notification to the ops team with
+          specific guidance on what needed correction.
+        </p>
+        <p>
+          For files that passed format validation, the pipeline applied a configurable field mapping layer —
+          translating client-specific column names and value formats to the internal platform schema.
+          A data quality pass then flagged records with missing required fields, invalid values, or logical conflicts
+          (e.g., termination date before effective date). Clean records were loaded directly to the platform database;
+          exception records were compiled into a structured report emailed automatically to the ops team.
+        </p>
+        <p>
+          The ops team's role shifted from manually entering all records to reviewing only the exception report
+          and handling edge cases — a fundamental change in how the team's time was allocated.
+        </p>
+      </div>
+
+      <!-- Results -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">Impact</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Results</h2>
+        </div>
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-card__metric">Days → Min</div>
+            <div class="result-card__label">Processing time for standard member intake files</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card__metric">~0%</div>
+            <div class="result-card__label">Manual data entry errors on standard records</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card__metric">100%</div>
+            <div class="result-card__label">Automated for clean records — ops focused on exceptions only</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card__metric">Multi-client</div>
+            <div class="result-card__label">Pipeline scaled across multiple employer clients with configurable field maps</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="case-study-section reveal">
+        <div style="margin-bottom:1.25rem;">
+          <p class="section__label">Stack</p>
+          <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Technologies Used</h2>
+        </div>
+        <div class="tech-stack">
+          <span class="tech-badge">Python</span>
+          <span class="tech-badge">SQL Server</span>
+          <span class="tech-badge">PowerShell</span>
+          <span class="tech-badge">SFTP / FileZilla</span>
+          <span class="tech-badge">Internal ETL Framework</span>
+          <span class="tech-badge">Email Automation</span>
+          <span class="tech-badge">Windows Task Scheduler</span>
+        </div>
+      </div>
+
+    </div><!-- /.container -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__content">
+        <p class="footer__name">Santiago Rodriguez</p>
+        <div class="footer__social">
+          <a href="https://www.linkedin.com/in/santiago-rodriguez8" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://github.com/rodsan8" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+        </div>
+        <p class="footer__copy">&copy; 2025 Santiago Rodriguez</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
