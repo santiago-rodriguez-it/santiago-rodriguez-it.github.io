@@ -49,7 +49,7 @@
           <span class="meta-badge">Automation</span>
           <span class="meta-badge">Healthcare Data</span>
           <span class="meta-badge">2022 – 2023</span>
-          <span class="meta-badge">Solo Architect / Lead</span>
+          <span class="meta-badge">Architect / Lead</span>
         </div>
       </div>
     </div>
@@ -66,16 +66,15 @@
           <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Manual Process. Real Costs.</h2>
         </div>
         <p>
-          When a new employer client onboarded to the VytlOne PBM platform, adding their member population was
-          a labor-intensive, error-prone process. The operations team received member eligibility data from clients
-          as spreadsheet attachments via email — no standard format, no automated handoff.
+          When we loaded member files for our clients, managing member population was
+          a labor-intensive, error-prone process.
         </p>
         <p>
-          An ops team member would manually open each file, map columns by hand, and key member records
-          one by one into the platform. A second team member would then perform a QA pass on the entered data.
-          Errors sent back to the client meant another round of corrections and re-entry.
-          For large clients with hundreds of members, this process could take days — delaying the go-live
-          date and tying up multiple staff members on purely mechanical work.
+          Daily Member intake files would entail receiving a file through sftp, an ops team member would manually
+          pull the file and map it to a standard format. Once the file was done being mapped, manually load the file 
+          into our local system and review results. If errors existed, manually send extract them and send back
+          to the client to fix. For large clients with thousands of members, this process could take hours, this would 
+          delay the file intake and tie up multiple staff members on purely mechanical work. 
         </p>
       </div>
 
@@ -92,21 +91,20 @@
           <div class="flow-diagram">
             <div class="flow-diagram__title flow-diagram__title--before">Before — Manual Process</div>
 
-            <div class="flow-step">Client sends spreadsheet via email</div>
+            <div class="flow-step">Client sends spreadsheet via sftp</div>
             <div class="flow-arrow"></div>
 
-            <div class="flow-step">Ops team downloads &amp; opens file</div>
+            <div class="flow-step">Ops team downloads &amp; maps file</div>
             <div class="flow-arrow"></div>
 
             <div class="flow-step flow-step--pain">
-              Manual data entry — record by record
-              <span class="flow-step__pain-label">⚠ Manual · Error-prone</span>
+              Manual bulk Load on local platform
             </div>
             <div class="flow-arrow"></div>
 
             <div class="flow-step flow-step--pain">
-              QA check by second team member
-              <span class="flow-step__pain-label">⚠ Bottleneck</span>
+              review results
+              <span class="flow-step__pain-label">⚠ Manual · Error-prone</span>
             </div>
             <div class="flow-arrow"></div>
 
@@ -144,7 +142,7 @@
             <div class="flow-step flow-step--auto">Exceptions report emailed to ops team</div>
             <div class="flow-arrow"></div>
 
-            <div class="flow-step flow-step--auto">Done — ops handles exceptions only</div>
+            <div class="flow-step flow-step--auto">Process Complete - ops only handles exceptions</div>
           </div>
 
         </div><!-- /.flow-diagrams -->
@@ -157,21 +155,21 @@
           <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">End-to-End Pipeline Design</h2>
         </div>
         <p>
-          I designed and built a fully automated intake pipeline that picked up client files via SFTP on a scheduled basis.
+          I helped design and built a fully automated intake pipeline that picked up client files via SFTP on a scheduled basis.
           The pipeline began with a format validation layer that verified column presence, file structure, and encoding
           before any data processing occurred. Invalid files triggered an immediate notification to the ops team with
           specific guidance on what needed correction.
         </p>
         <p>
-          For files that passed format validation, the pipeline applied a configurable field mapping layer —
-          translating client-specific column names and value formats to the internal platform schema.
+          For files that passed format validation, the pipeline applied a configurable field mapping layer that
+          translated client-specific column names and value formats to the internal platform schema.
           A data quality pass then flagged records with missing required fields, invalid values, or logical conflicts
           (e.g., termination date before effective date). Clean records were loaded directly to the platform database;
           exception records were compiled into a structured report emailed automatically to the ops team.
         </p>
         <p>
           The ops team's role shifted from manually entering all records to reviewing only the exception report
-          and handling edge cases — a fundamental change in how the team's time was allocated.
+          and handling edge cases. This fundamentally changed how the team's time was allocated and allowed them to work on other initiatives.
         </p>
       </div>
 
@@ -183,7 +181,7 @@
         </div>
         <div class="results-grid">
           <div class="result-card">
-            <div class="result-card__metric">Days → Min</div>
+            <div class="result-card__metric">Hours → Min</div>
             <div class="result-card__label">Processing time for standard member intake files</div>
           </div>
           <div class="result-card">
@@ -192,7 +190,7 @@
           </div>
           <div class="result-card">
             <div class="result-card__metric">100%</div>
-            <div class="result-card__label">Automated for clean records — ops focused on exceptions only</div>
+            <div class="result-card__label">Automated for clean records, ops focused on exceptions only</div>
           </div>
           <div class="result-card">
             <div class="result-card__metric">Multi-client</div>
@@ -234,7 +232,7 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
           </a>
         </div>
-        <p class="footer__copy">&copy; 2025 Santiago Rodriguez</p>
+        <p class="footer__copy">&copy; 2026 Santiago Rodriguez</p>
       </div>
     </div>
   </footer>

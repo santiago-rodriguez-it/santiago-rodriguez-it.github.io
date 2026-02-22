@@ -68,12 +68,12 @@
         </div>
         <p>
           VytlOne maintained member data in an internal platform that served as the operational source of truth for
-          eligibility, plan enrollment, and member status. Salesforce CRM was used separately by account managers to
+          eligibility, plan enrollment, and member status. Salesforce CRM was used separately by call center representatives and account managers to
           track client relationships, service interactions, and member-level account activity.
         </p>
         <p>
-          The problem: there was no automated connection between the two systems. Account managers routinely had to
-          manually cross-reference both platforms to build a complete picture of a member — checking the internal
+          The problem: there was no automated connection between the two systems. Call center representatives and account managers routinely had to
+          manually cross-reference both platforms to build a complete picture of a member, checking the internal
           system for eligibility status, then Salesforce for account notes and history. When data didn't match,
           someone manually corrected Salesforce by hand. This process repeated every time member data changed,
           creating a persistent cycle of stale data, duplicate records, and wasted account manager time.
@@ -91,7 +91,7 @@
 
           <!-- BEFORE -->
           <div class="flow-diagram">
-            <div class="flow-diagram__title flow-diagram__title--before">Before — Manual Sync</div>
+            <div class="flow-diagram__title flow-diagram__title--before">Before: Manual Sync</div>
 
             <div class="flow-step">Account manager needs member info</div>
             <div class="flow-arrow"></div>
@@ -122,9 +122,9 @@
 
           <!-- AFTER -->
           <div class="flow-diagram">
-            <div class="flow-diagram__title flow-diagram__title--after">After — Automated Daily Sync</div>
+            <div class="flow-diagram__title flow-diagram__title--after">After: Automated Daily Sync</div>
 
-            <div class="flow-step flow-step--auto">Internal platform — single source of truth</div>
+            <div class="flow-step flow-step--auto">Internal platform - single source of truth</div>
             <div class="flow-arrow"></div>
 
             <div class="flow-step flow-step--auto">Daily ETL job triggers automatically</div>
@@ -139,7 +139,7 @@
             <div class="flow-step flow-step--auto">Load to Salesforce via API</div>
             <div class="flow-arrow"></div>
 
-            <div class="flow-step flow-step--auto">Salesforce always current — no manual sync</div>
+            <div class="flow-step flow-step--auto">Salesforce always current with no manual sync</div>
             <div class="flow-arrow"></div>
 
             <div class="flow-step flow-step--auto">Account managers: single source of truth</div>
@@ -155,20 +155,19 @@
           <h2 class="section__title" style="font-size:1.75rem;text-align:left;margin-bottom:0.75rem;">Delta-Based ETL Architecture</h2>
         </div>
         <p>
-          I designed and built a daily scheduled ETL pipeline that ran overnight and had Salesforce fully synchronized
-          before the business day began. The pipeline used a delta detection approach — rather than performing a full
+          I helped design and built a daily scheduled ETL pipeline that ran overnight and had Salesforce fully synchronized
+          before the business day began. The pipeline used a delta detection approach, rather than performing a full
           extract on every run, it identified only the records that had changed since the last successful load,
           minimizing API calls and processing overhead.
         </p>
         <p>
-          The extract layer pulled member records from the internal SQL Server database, applying a last-modified
+          The extract layer pulled member records from the internal Oracle database, applying a last-modified
           timestamp filter to scope the delta. A transformation layer standardized field formats and applied
-          deduplication logic — Salesforce's existing duplicate records were resolved by designating the internal
-          platform record as authoritative. The load layer used the Salesforce Bulk API for efficiency, with
+          deduplication logic. The load layer used the Salesforce Bulk API for efficiency, with
           upsert operations keyed on a unique member identifier.
         </p>
         <p>
-          Error handling and alerting were built into every layer: failed API calls triggered immediate email
+          Error handling and alerts were built into every layer: failed API calls triggered immediate email
           notification to the team, and a daily summary log was generated for audit and troubleshooting purposes.
           If the pipeline failed, account managers received an automated alert before they began their day.
         </p>
@@ -187,7 +186,7 @@
           </div>
           <div class="result-card">
             <div class="result-card__metric">0</div>
-            <div class="result-card__label">Duplicate records — deduplication logic resolved all existing duplicates on first run</div>
+            <div class="result-card__label">Deduplication logic resolved all existing duplicates on first run</div>
           </div>
           <div class="result-card">
             <div class="result-card__metric">1 Source</div>
@@ -195,7 +194,7 @@
           </div>
           <div class="result-card">
             <div class="result-card__metric">Delta</div>
-            <div class="result-card__label">Only changed records are synced — minimal API usage, fast runtime</div>
+            <div class="result-card__label">Only changed records are synced. Minimal API usage, fast runtime</div>
           </div>
         </div>
       </div>
@@ -208,12 +207,13 @@
         </div>
         <div class="tech-stack">
           <span class="tech-badge">Python</span>
-          <span class="tech-badge">SQL Server</span>
+          <span class="tech-badge">Oracle database</span>
           <span class="tech-badge">Salesforce Bulk API</span>
+          <span class="tech-badge">Mulesoft</span>
           <span class="tech-badge">PowerShell</span>
           <span class="tech-badge">Internal ETL Framework</span>
           <span class="tech-badge">Email Automation</span>
-          <span class="tech-badge">Windows Task Scheduler</span>
+          <span class="tech-badge">Alteryx</span>
         </div>
       </div>
 
@@ -233,7 +233,7 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
           </a>
         </div>
-        <p class="footer__copy">&copy; 2025 Santiago Rodriguez</p>
+        <p class="footer__copy">&copy; 2026 Santiago Rodriguez</p>
       </div>
     </div>
   </footer>
